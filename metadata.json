@@ -1,0 +1,13 @@
+{
+  "name": "Remix: JanaSeva: Intelligent Scheme Engine",
+  "description": "An AI-powered platform for scheme eligibility analysis, automated document verification, and multilingual application guidance.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "AI Eligibility Engine",
+    "Multilingual Conversational Interface",
+    "Automated Document OCR",
+    "Real-time Application Tracking"
+  ]
+}
