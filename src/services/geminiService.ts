@@ -72,13 +72,29 @@ export async function chatWithAssistant(history: Message[], userInput: string, l
   `;
 
   try {
+    // Gemini API requires history to start with a "user" role message.
+    // Filter out leading "model" messages (e.g. the initial greeting) to prevent API errors.
+    const filteredHistory = history.filter(msg => msg.role !== "assistant" || history.indexOf(msg) !== 0);
+    
+    // Also ensure alternating user/model pattern by building valid pairs
+    const validHistory: { role: string; parts: { text: string }[] }[] = [];
+    for (const msg of filteredHistory) {
+      const role = msg.role === "assistant" ? "model" : "user";
+      // Avoid consecutive same-role messages
+      if (validHistory.length > 0 && validHistory[validHistory.length - 1].role === role) {
+        continue;
+      }
+      validHistory.push({ role, parts: [{ text: msg.content }] });
+    }
+    // Ensure history starts with "user" if it has entries
+    if (validHistory.length > 0 && validHistory[0].role === "model") {
+      validHistory.shift();
+    }
+
     const chat = ai.chats.create({
       model: "gemini-2.5-flash",
       config: { systemInstruction },
-      history: history.map(msg => ({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }]
-      }))
+      history: validHistory
     });
 
     // Add the constant instruction suffix to ensure the model always provides the scheme details
@@ -86,9 +102,9 @@ export async function chatWithAssistant(history: Message[], userInput: string, l
 
     const response: GenerateContentResponse = await chat.sendMessage({ message: userInput + constantPromptSuffix });
     return response.text || "I'm sorry, I couldn't process that.";
-  } catch (error) {
-    console.error("Chat error:", error);
-    return "I'm having trouble connecting. Please try again.";
+  } catch (error: any) {
+    console.error("Chat error:", error?.message || error);
+    return `I'm having trouble connecting. Error: ${error?.message || "Unknown error"}. Please check your API key and try again.`;
   }
 }
 
