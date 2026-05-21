@@ -1,7 +1,16 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { UserProfile, Scheme, Message, Language } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const getApiKey = () => {
+  if (typeof window !== "undefined") {
+    // Client-side Vite environment
+    return (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
+  }
+  // Server-side Node environment
+  return process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "";
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 export async function analyzeEligibility(profile: UserProfile, schemes: Scheme[], language: Language = "en"): Promise<string> {
   const prompt = `
