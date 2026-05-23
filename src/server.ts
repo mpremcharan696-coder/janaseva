@@ -41,6 +41,11 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// Catch-all for unmatched API routes — returns JSON instead of Vercel's default HTML
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
+});
+
 // Start the server only if run directly (local development)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   app.listen(PORT, () => {
