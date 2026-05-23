@@ -13,7 +13,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar"
 import { Badge } from "@/src/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import { Message, Language } from "../types";
-import { chatWithAssistant } from "../services/geminiService";
 
 interface ChatAssistantProps {
   language: Language;
@@ -68,7 +67,19 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
     setIsLoading(true);
 
     try {
-      const response = await chatWithAssistant(messages, input, language);
+      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const res = await fetch(`${apiUrl}/api/gemini/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ history: messages, userInput: input, language })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to communicate with assistant");
+      }
+      const data = await res.json();
+      const response = data.text;
+
       const assistantMsg: Message = {
         role: "assistant",
         content: response,
@@ -76,8 +87,15 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
         language: language
       };
       setMessages(prev => [...prev, assistantMsg]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat Error:", error);
+      const assistantMsg: Message = {
+        role: "assistant",
+        content: `Chat Error: ${error.message || "Failed to communicate with assistant. Please try again."}`,
+        timestamp: new Date().toISOString(),
+        language: language
+      };
+      setMessages(prev => [...prev, assistantMsg]);
     } finally {
       setIsLoading(false);
     }

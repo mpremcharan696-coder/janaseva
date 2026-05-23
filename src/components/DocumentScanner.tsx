@@ -11,7 +11,6 @@ import { Badge } from "@/src/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import { Progress } from "@/src/components/ui/progress";
 import { Message, Language } from "../types";
-import { verifyDocument } from "../services/geminiService";
 import { translations } from "../lib/i18n";
 
 interface DocumentScannerProps {
@@ -40,9 +39,25 @@ export default function DocumentScanner({ language }: DocumentScannerProps) {
   const handleVerify = async () => {
     if (!image) return;
     setAnalyzing(true);
-    const result = await verifyDocument(image, "General Scheme Application", language);
-    setReport(result);
-    setAnalyzing(false);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const res = await fetch(`${apiUrl}/api/gemini/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageData: image, schemeName: "General Scheme Application", language })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to verify document");
+      }
+      const data = await res.json();
+      setReport(data.text);
+    } catch (error: any) {
+      console.error("OCR error:", error);
+      setReport(`### Error Verifying Document\n\nFailed to scan or verify the document: ${error.message || "Unknown Error"}. Please ensure the image is clear and try again.`);
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   return (

@@ -14,7 +14,6 @@ import { Progress } from "@/src/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import ReactMarkdown from "react-markdown";
 import { UserProfile } from "../types";
-import { analyzeEligibility } from "../services/geminiService";
 import { MOCK_SCHEMES } from "../constants";
 import { cn } from "@/src/lib/utils";
 
@@ -53,10 +52,26 @@ export default function EligibilityForm({ onComplete }: EligibilityFormProps) {
 
   const handleAnalyze = async () => {
     setLoading(true);
-    const analysis = await analyzeEligibility(profile, MOCK_SCHEMES);
-    setResult(analysis);
-    setLoading(false);
-    onComplete(profile);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const res = await fetch(`${apiUrl}/api/gemini/eligibility`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile, schemes: MOCK_SCHEMES })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to analyze eligibility");
+      }
+      const data = await res.json();
+      setResult(data.text);
+    } catch (error: any) {
+      console.error("Eligibility reasoning error:", error);
+      setResult(`### Error Analyzing Eligibility\n\nFailed to calculate eligibility results: ${error.message || "Unknown Error"}. Please try again later.`);
+    } finally {
+      setLoading(false);
+      onComplete(profile);
+    }
   };
 
   const nextStep = () => setStep(s => s + 1);

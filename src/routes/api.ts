@@ -2,6 +2,7 @@ import express from 'express';
 import { getSchemes, getSchemeById } from '../controllers/schemesController.js';
 import { upsertUserProfile } from '../controllers/userController.js';
 import { login, register } from '../controllers/authController.js';
+import { chat, analyze, verify } from '../controllers/geminiController.js';
 
 const router = express.Router();
 
@@ -15,5 +16,10 @@ router.post('/user/profile', upsertUserProfile);
 // Auth endpoints
 router.post('/auth/login', login);
 router.post('/auth/register', register);
+
+// Gemini AI endpoints
+router.post('/gemini/chat', chat);
+router.post('/gemini/eligibility', analyze);
+router.post('/gemini/verify', verify);
 
 export default router;
