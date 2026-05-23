@@ -1,5 +1,5 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { UserProfile, Scheme, Message, Language } from "../types";
+import { UserProfile, Scheme, Message, Language } from "../types.js";
 
 const getApiKey = () => {
   if (typeof window !== "undefined") {
