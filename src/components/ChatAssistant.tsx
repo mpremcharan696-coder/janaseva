@@ -67,7 +67,7 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
     setIsLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
       const res = await fetch(`${apiUrl}/api/gemini/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

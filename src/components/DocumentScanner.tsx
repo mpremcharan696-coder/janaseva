@@ -40,7 +40,7 @@ export default function DocumentScanner({ language }: DocumentScannerProps) {
     if (!image) return;
     setAnalyzing(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
       const res = await fetch(`${apiUrl}/api/gemini/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
