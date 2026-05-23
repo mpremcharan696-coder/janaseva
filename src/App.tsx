@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { LayoutDashboard, ClipboardList, MessageSquare, Info, AlertCircle, Loader2, Sparkles, UserCircle } from "lucide-react";
+import { LayoutDashboard, Bot, Info, AlertCircle, Loader2, Sparkles, UserCircle } from "lucide-react";
 import { Toaster } from "@/src/components/ui/sonner";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -351,7 +351,7 @@ export default function App() {
 
   const navItems = [
     { id: "dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
-    { id: "eligibility", label: t.nav.eligibility, icon: ClipboardList },
+    { id: "chat", label: t.nav.janaseva_ai, icon: Bot },
     { id: "library", label: t.nav.library, icon: Info },
     { id: "settings", label: t.nav.settings, icon: UserCircle },
   ];
@@ -582,14 +582,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Floating Assistant Trigger for Mobile */}
-        <div 
-          onClick={() => setActiveTab("chat")}
-          className="fixed bottom-24 right-8 lg:bottom-8 lg:right-8 size-14 lg:size-16 bg-indigo-600 rounded-full shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-all border-4 border-white z-50 group"
-        >
-          <MessageSquare className="size-7 lg:size-8 text-white group-hover:rotate-12 transition-transform" />
-          <div className="absolute -top-1 -right-1 size-4 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></div>
-        </div>
+
 
         {/* Bottom Mobile Nav (Labels removed for polish) */}
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 lg:hidden w-[90%]">

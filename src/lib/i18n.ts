@@ -8,6 +8,7 @@ export const translations: Record<Language, any> = {
     nav: {
       dashboard: "Dashboard",
       eligibility: "Eligibility",
+      janaseva_ai: "JanaSeva AI",
       vault: "Vault",
       tracking: "Tracking",
       library: "Library",
@@ -64,6 +65,7 @@ export const translations: Record<Language, any> = {
     nav: {
       dashboard: "डैशबोर्ड",
       eligibility: "पात्रता",
+      janaseva_ai: "जनसेवा AI",
       vault: "दस्तावेज़",
       tracking: "ट्रैकिंग",
       library: "योजना पुस्तकालय",
@@ -120,6 +122,7 @@ export const translations: Record<Language, any> = {
     nav: {
       dashboard: "డాష్‌బోర్డ్",
       eligibility: "అర్హత",
+      janaseva_ai: "జనసేవ AI",
       vault: "పత్రాలు",
       tracking: "ట్రాకింగ్",
       library: "పథకాల లైబ్రరీ",
@@ -176,6 +179,7 @@ export const translations: Record<Language, any> = {
     nav: {
       dashboard: "டாஷ்போர்டு",
       eligibility: "தகுதியறிதல்",
+      janaseva_ai: "ஜனசேவா AI",
       vault: "ஆவணங்கள்",
       tracking: "கண்காணிப்பு",
       library: "திட்ட நூலகம்",
@@ -232,6 +236,7 @@ export const translations: Record<Language, any> = {
     nav: {
       dashboard: "ড্যাশবোর্ড",
       eligibility: "যোগ্যতা",
+      janaseva_ai: "জনসেবা AI",
       vault: "ভল্ট",
       tracking: "ট্র্যাকিং",
       library: "স্কিম লাইব্রেরি",
@@ -288,6 +293,7 @@ export const translations: Record<Language, any> = {
     nav: {
       dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
       eligibility: "ಅರ್ಹತೆ",
+      janaseva_ai: "ಜನಸೇವೆ AI",
       vault: "ದಾಖಲೆಗಳು",
       tracking: "ಟ್ರ್ಯಾಕಿಂಗ್",
       library: "ಯೋಜನಾ ಗ್ರಂಥಾಲಯ",
