@@ -562,7 +562,7 @@ export default function App() {
                   </TabsContent>
 
                   <TabsContent value="chat" className="mt-0">
-                    <ChatAssistant language={language} userId={userProfile?.name || "Ramesh"} />
+                    <ChatAssistant language={language} userId={userProfile?.id || ""} userName={userProfile?.name || "Citizen"} />
                   </TabsContent>
 
                   <TabsContent value="library" className="mt-0">

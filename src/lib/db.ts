@@ -65,10 +65,21 @@ if (pool) {
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS chat_messages (
+          id SERIAL PRIMARY KEY,
+          user_id VARCHAR(255) NOT NULL,
+          role VARCHAR(50) NOT NULL,
+          content TEXT NOT NULL,
+          language VARCHAR(10) NOT NULL,
+          timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
         ALTER TABLE applications DROP CONSTRAINT IF EXISTS fk_user;
+        ALTER TABLE chat_messages DROP CONSTRAINT IF EXISTS fk_chat_user;
         ALTER TABLE user_profiles ALTER COLUMN id TYPE VARCHAR(255);
         ALTER TABLE applications ALTER COLUMN user_id TYPE VARCHAR(255);
         ALTER TABLE applications ADD CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES user_profiles(id) ON DELETE CASCADE;
+        ALTER TABLE chat_messages ADD CONSTRAINT fk_chat_user FOREIGN KEY(user_id) REFERENCES user_profiles(id) ON DELETE CASCADE;
 
         ALTER TABLE user_profiles 
         ADD COLUMN IF NOT EXISTS full_name VARCHAR(255),
@@ -214,6 +225,14 @@ export const query = async (text: string, params?: any[]) => {
       };
       mockUsersStore.set(id, updatedUser);
       return { rows: [updatedUser], rowCount: 1 };
+    }
+
+    if (lowerText.includes('select * from chat_messages')) {
+      return { rows: [], rowCount: 0 };
+    }
+
+    if (lowerText.includes('insert into chat_messages')) {
+      return { rows: [{ id: Math.floor(Math.random() * 1000) }], rowCount: 1 };
     }
 
     return { rows: [], rowCount: 0 };

@@ -17,34 +17,49 @@ import { Message, Language } from "../types";
 interface ChatAssistantProps {
   language: Language;
   userId: string;
+  userName?: string;
 }
 
-export default function ChatAssistant({ language, userId }: ChatAssistantProps) {
+export default function ChatAssistant({ language, userId, userName = "Citizen" }: ChatAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Update greeting when language changes
+  // Update greeting when language changes or load history
   useEffect(() => {
     const greetings: Record<Language, string> = {
-      en: `Hello ${userId}! I am JanaSeva, your government scheme assistant. I can help you find schemes, check eligibility, and guide you through applications.`,
-      hi: `नमस्ते ${userId}! मैं जनसेवा हूँ, आपकी सरकारी योजना सहायक। मैं योजनाओं को खोजने, पात्रता की जांच करने और आवेदन में आपकी मदद कर सकता हूँ।`,
-      te: `నమస్కారం ${userId}! నేను జనసేవ, మీ ప్రభుత్వ పథకాల సహాయకుడిని. పథకాలను కనుగొనడంలో, అర్హతను తనిఖీ చేయడంలో మరియు దరఖాస్తు చేయడంలో నేను మీకు సహాయం చేస్తాను.`,
-      ta: `வணக்கம் ${userId}! நான் JanaSeva, உங்கள் அரசு திட்ட உதவியாளர். திட்டங்களைக் கண்டறியவும், தகுதியைச் சரிபார்க்கவும், விண்ணப்பிக்கவும் நான் உங்களுக்கு உதவுவேன்.`,
-      bn: `নমস্কার ${userId}! আমি জনসেবা, আপনার সরকারি স্কিম সহকারী। আমি আপনাকে স্কিম খুঁজে পেতে, যোগ্যতা যাচাই করতে এবং আবেদনের নির্দেশিকা দিতে সাহায্য করতে পারি।`,
-      kn: `ನಮಸ್ಕಾರ ${userId}! ನಾನು ಜನಸೇವೆ, ನಿಮ್ಮ ಸರ್ಕಾರಿ ಯೋಜನಾ ಸಹಾಯಕ. ಯೋಜನೆಗಳನ್ನು ಹುಡುಕಲು, ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಲು ಮತ್ತು ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.`
+      en: `Hello ${userName}! I am JanaSeva, your government scheme assistant. I can help you find schemes, check eligibility, and guide you through applications.`,
+      hi: `नमस्ते ${userName}! मैं जनसेवा हूँ, आपकी सरकारी योजना सहायक। मैं योजनाओं को खोजने, पात्रता की जांच करने और आवेदन में आपकी मदद कर सकता हूँ।`,
+      te: `నమస్కారం ${userName}! నేను జనసేవ, మీ ప్రభుత్వ పథకాల సహాయకుడిని. పథకాలను కనుగొనడంలో, అర్హతను తనిఖీ చేయడంలో మరియు దరఖాస్తు చేయడంలో నేను మీకు సహాయం చేస్తాను.`,
+      ta: `வணக்கம் ${userName}! நான் JanaSeva, உங்கள் அரசு திட்ட உதவியாளர். திட்டங்களைக் கண்டறியவும், தகுதியைச் சரிபார்க்கவும், விண்ணப்பிக்கவும் நான் உங்களுக்கு உதவுவேன்.`,
+      bn: `নমস্কার ${userName}! আমি জনসেবা, আপনার সরকারি স্কিম সহকারী। আমি আপনাকে স্কিম খুঁজে পেতে, যোগ্যতা যাচাই করতে এবং আবেদনের নির্দেশিকা দিতে সাহায্য করতে পারি।`,
+      kn: `ನಮಸ್ಕಾರ ${userName}! ನಾನು ಜನಸೇವೆ, ನಿಮ್ಮ ಸರ್ಕಾರಿ ಯೋಜನಾ ಸಹಾಯಕ. ಯೋಜನೆಗಳನ್ನು ಹುಡುಕಲು, ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಲು ಮತ್ತು ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.`
     };
 
-    setMessages([
-      {
-        role: "assistant",
-        content: greetings[language],
-        timestamp: new Date().toISOString(),
-        language: language
+    const loadHistory = async () => {
+      if (!userId) {
+        setMessages([{ role: "assistant", content: greetings[language], timestamp: new Date().toISOString(), language }]);
+        return;
       }
-    ]);
-  }, [language, userId]);
+      try {
+        const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
+        const res = await fetch(`${apiUrl}/api/chat/${userId}/history`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.messages && data.messages.length > 0) {
+            setMessages(data.messages);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load history:", e);
+      }
+      setMessages([{ role: "assistant", content: greetings[language], timestamp: new Date().toISOString(), language }]);
+    };
+
+    loadHistory();
+  }, [language, userId, userName]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -66,8 +81,18 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
     setInput("");
     setIsLoading(true);
 
+    const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
+
+    // Save user message to DB asynchronously
+    if (userId) {
+      fetch(`${apiUrl}/api/chat/${userId}/message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: "user", content: input, language })
+      }).catch(e => console.error("Failed to save user message:", e));
+    }
+
     try {
-      const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
       const res = await fetch(`${apiUrl}/api/gemini/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,6 +117,15 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
         language: language
       };
       setMessages(prev => [...prev, assistantMsg]);
+
+      // Save assistant message to DB asynchronously
+      if (userId) {
+        fetch(`${apiUrl}/api/chat/${userId}/message`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "assistant", content: response, language })
+        }).catch(e => console.error("Failed to save assistant message:", e));
+      }
     } catch (error: any) {
       console.error("Chat Error:", error);
       const assistantMsg: Message = {
