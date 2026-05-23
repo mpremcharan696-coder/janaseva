@@ -4,7 +4,7 @@ import { UserProfile, Scheme, Message, Language } from "../types";
 const getApiKey = () => {
   if (typeof window !== "undefined") {
     // Client-side Vite environment
-    return (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
+    return process.env.GEMINI_API_KEY || (import.meta as any).env?.VITE_GEMINI_API_KEY || "";
   }
   // Server-side Node environment
   return process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "";
@@ -36,9 +36,9 @@ export async function analyzeEligibility(profile: UserProfile, schemes: Scheme[]
       contents: prompt,
     });
     return response.text || "Unable to generate recommendations.";
-  } catch (error) {
+  } catch (error: any) {
     console.error("Eligibility reasoning error:", error);
-    return "Error analyzing eligibility. Please try again later.";
+    return `Error analyzing eligibility: ${error?.message || error}`;
   }
 }
 
@@ -104,7 +104,7 @@ export async function chatWithAssistant(history: Message[], userInput: string, l
     return response.text || "I'm sorry, I couldn't process that.";
   } catch (error: any) {
     console.error("Chat error:", error?.message || error);
-    return `I'm having trouble connecting. Error: ${error?.message || "Unknown error"}. Please check your API key and try again.`;
+    return `Chat error: ${error?.message || error}`;
   }
 }
 
@@ -132,8 +132,8 @@ export async function verifyDocument(imageData: string, schemeName: string, lang
       contents: { parts: [imagePart, { text: prompt }] },
     });
     return response.text || "Document analysis failed.";
-  } catch (error) {
+  } catch (error: any) {
     console.error("OCR error:", error);
-    return "Error scanning document. Please ensure the image is clear.";
+    return `Error scanning document: ${error?.message || error}`;
   }
 }
