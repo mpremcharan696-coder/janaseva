@@ -104,7 +104,10 @@ export async function chatWithAssistant(history: Message[], userInput: string, l
     return response.text || "I'm sorry, I couldn't process that.";
   } catch (error: any) {
     console.error("Chat error:", error?.message || error);
-    return `Chat error: ${error?.message || error}`;
+    const diag = typeof window !== "undefined"
+      ? `client [has process.env.GEMINI_API_KEY: ${!!process.env.GEMINI_API_KEY}, has VITE_GEMINI_API_KEY: ${!!(import.meta as any).env?.VITE_GEMINI_API_KEY}]`
+      : `server [has process.env.GEMINI_API_KEY: ${!!process.env.GEMINI_API_KEY}]`;
+    return `Chat error: ${error?.message || error} (Diagnostics: ${diag})`;
   }
 }
 
