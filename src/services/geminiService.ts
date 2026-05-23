@@ -10,7 +10,17 @@ const getApiKey = () => {
   return process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "";
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
+let aiInstance: GoogleGenAI | null = null;
+const getAiClient = () => {
+  if (!aiInstance) {
+    const key = getApiKey();
+    if (!key) {
+      throw new Error("Gemini API key is not configured on the server. Please add GEMINI_API_KEY to your environment variables.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey: key });
+  }
+  return aiInstance;
+};
 
 export async function analyzeEligibility(profile: UserProfile, schemes: Scheme[], language: Language = "en"): Promise<string> {
   const prompt = `
@@ -31,6 +41,7 @@ export async function analyzeEligibility(profile: UserProfile, schemes: Scheme[]
   `;
 
   try {
+    const ai = getAiClient();
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
@@ -91,6 +102,7 @@ export async function chatWithAssistant(history: Message[], userInput: string, l
       validHistory.shift();
     }
 
+    const ai = getAiClient();
     const chat = ai.chats.create({
       model: "gemini-2.5-flash",
       config: { systemInstruction },
@@ -130,6 +142,7 @@ export async function verifyDocument(imageData: string, schemeName: string, lang
       },
     };
 
+    const ai = getAiClient();
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: { parts: [imagePart, { text: prompt }] },
