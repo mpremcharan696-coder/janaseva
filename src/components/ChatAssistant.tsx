@@ -107,14 +107,14 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
   };
 
   return (
-    <div className="max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto h-[calc(100vh-80px)] flex flex-col gap-3 py-2">
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="size-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
             <Bot className="size-7" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">AI Assistant</h2>
+            <h2 className="text-2xl font-bold text-slate-800">JanaSeva AI</h2>
             <div className="flex items-center gap-2">
               <span className="size-2 bg-emerald-500 rounded-full animate-pulse" />
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest leading-none">Online & Multilingual</p>
@@ -131,7 +131,7 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
         </div>
       </div>
 
-      <Card className="flex-1 flex flex-col border-indigo-100 shadow-xl overflow-hidden bg-white/50 backdrop-blur-xl">
+      <Card className="flex-1 min-h-0 flex flex-col border-indigo-100 shadow-xl overflow-hidden bg-white/50 backdrop-blur-xl">
         <CardContent className="flex-1 p-0 overflow-hidden">
           <ScrollArea className="h-full px-6 py-8" ref={scrollRef}>
             <div className="space-y-8">
@@ -200,8 +200,8 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
         </CardFooter>
       </Card>
       
-      <div className="flex flex-wrap gap-2">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest w-full mb-1">Try asking:</p>
+      <div className="flex flex-wrap gap-2 shrink-0">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest w-full mb-0">Try asking:</p>
         {[
           "What is FSI scheme?",
           "Check documentation for health card",
