@@ -60,8 +60,13 @@ export default function EligibilityForm({ onComplete }: EligibilityFormProps) {
         body: JSON.stringify({ profile, schemes: MOCK_SCHEMES })
       });
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to analyze eligibility");
+        const text = await res.text();
+        let errorMessage = `Server error (${res.status})`;
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.error || errorMessage;
+        } catch { /* response was not JSON */ }
+        throw new Error(errorMessage);
       }
       const data = await res.json();
       setResult(data.text);

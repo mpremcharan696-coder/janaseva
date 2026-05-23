@@ -74,8 +74,13 @@ export default function ChatAssistant({ language, userId }: ChatAssistantProps) 
         body: JSON.stringify({ history: messages, userInput: input, language })
       });
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to communicate with assistant");
+        const text = await res.text();
+        let errorMessage = `Server error (${res.status})`;
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.error || errorMessage;
+        } catch { /* response was not JSON */ }
+        throw new Error(errorMessage);
       }
       const data = await res.json();
       const response = data.text;
