@@ -60,6 +60,13 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
   };
 
   const handleBackendAuth = async (userEmail: string, uid: string, isSignUpRequest: boolean) => {
+    // For signup, always show the onboarding profile form
+    if (isSignUpRequest) {
+      onNewUser(userEmail, uid);
+      return;
+    }
+
+    // For login, try to fetch existing profile from backend
     try {
       const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
       const res = await fetch(`${apiUrl}/api/auth/login`, {
@@ -74,19 +81,13 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
       if (data.exists) {
         onLoginSuccess(userEmail, data.profile, data.applications, uid);
       } else {
-        if (isSignUpRequest) {
-          onNewUser(userEmail, uid);
-        } else {
-          onLoginSuccess(userEmail, null, [], uid);
-        }
+        // User exists in Firebase but no profile in DB — show onboarding
+        onLoginSuccess(userEmail, null, [], uid);
       }
     } catch (err) {
       console.error(err);
-      if (isSignUpRequest) {
-        onNewUser(userEmail, uid);
-      } else {
-        onLoginSuccess(userEmail, null, [], uid);
-      }
+      // Backend unreachable — let them in with no profile (onboarding will show)
+      onLoginSuccess(userEmail, null, [], uid);
     }
   };
 
@@ -105,9 +106,23 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
       
       const user = userCredential.user;
       await handleBackendAuth(user.email || email, user.uid, isSignUp);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Authentication failed. Please check your credentials.");
+      const errorCode = err?.code || "";
+      if (errorCode === "auth/user-not-found" || errorCode === "auth/invalid-credential") {
+        // No account with this email — prompt to sign up
+        setIsSignUp(true);
+        alert("No account found with this email. Please create a new account.");
+      } else if (errorCode === "auth/wrong-password") {
+        alert("Incorrect password. Please try again.");
+      } else if (errorCode === "auth/email-already-in-use") {
+        setIsSignUp(false);
+        alert("An account with this email already exists. Please sign in instead.");
+      } else if (errorCode === "auth/weak-password") {
+        alert("Password is too weak. Please use at least 6 characters.");
+      } else {
+        alert("Authentication failed. Please check your credentials and try again.");
+      }
     } finally {
       setIsLoading(false);
     }

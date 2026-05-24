@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LayoutDashboard, Bot, Info, AlertCircle, Loader2, Sparkles, UserCircle } from "lucide-react";
 import { Toaster } from "@/src/components/ui/sonner";
 import { toast } from "sonner";
@@ -95,6 +95,9 @@ export default function App() {
     setIsSchemeDialogOpen(true);
   };
 
+  // Ref to track if user just signed up — prevents onAuthStateChanged from overriding the onboarding flow
+  const isNewSignUpRef = useRef(false);
+
   const [sessionEmail, setSessionEmail] = useState<string | null>(() => localStorage.getItem("sessionEmail"));
   const [sessionUid, setSessionUid] = useState<string | null>(() => localStorage.getItem("sessionUid"));
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -122,6 +125,16 @@ export default function App() {
         setSessionUid(user.uid);
         localStorage.setItem("sessionEmail", user.email || "");
         localStorage.setItem("sessionUid", user.uid);
+
+        // If this is a fresh signup triggered by LoginPortal, skip auto-profile creation
+        // and let the onboarding form handle it
+        if (isNewSignUpRef.current) {
+          isNewSignUpRef.current = false;
+          setShowOnboarding(true);
+          setUserProfile(null);
+          setAuthLoading(false);
+          return;
+        }
 
         // Load local cache immediately so the user doesn't see a blank screen
         const cachedProfileStr = localStorage.getItem(`userProfile_${user.uid}`);
@@ -163,20 +176,12 @@ export default function App() {
               }
               setShowOnboarding(false);
             } else {
+              // No profile in backend — show onboarding form so user can fill real details
               if (cachedProfileStr) {
                 setShowOnboarding(false);
               } else {
-                const defaultProf = createDefaultProfile(user.email, user.uid);
-                setUserProfile(defaultProf);
-                localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(defaultProf));
-                setShowOnboarding(false);
-
-                // Auto-save to database so it exists
-                fetch(`${apiUrl}/api/auth/register`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ email: user.email, uid: user.uid, profile: defaultProf }),
-                }).catch(err => console.error("Auto-registration on refresh failed:", err));
+                setShowOnboarding(true);
+                setUserProfile(null);
               }
             }
           } else {
@@ -184,10 +189,9 @@ export default function App() {
             if (cachedProfileStr) {
               setShowOnboarding(false);
             } else {
-              const defaultProf = createDefaultProfile(user.email, user.uid);
-              setUserProfile(defaultProf);
-              localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(defaultProf));
-              setShowOnboarding(false);
+              // Backend unreachable and no cache — show onboarding
+              setShowOnboarding(true);
+              setUserProfile(null);
             }
           }
         } catch (err) {
@@ -195,10 +199,9 @@ export default function App() {
           if (cachedProfileStr) {
             setShowOnboarding(false);
           } else {
-            const defaultProf = createDefaultProfile(user.email, user.uid);
-            setUserProfile(defaultProf);
-            localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(defaultProf));
-            setShowOnboarding(false);
+            // Offline and no cache — show onboarding
+            setShowOnboarding(true);
+            setUserProfile(null);
           }
         } finally {
           setAuthLoading(false);
@@ -216,24 +219,17 @@ export default function App() {
   }, []);
 
   const handleLoginSuccess = (email: string, profile: any, applications: any[], uid: string) => {
-    let normalizedProfile = normalizeProfile(profile);
+    const normalizedProfile = normalizeProfile(profile);
     setSessionEmail(email);
     setSessionUid(uid);
     localStorage.setItem("sessionEmail", email);
     localStorage.setItem("sessionUid", uid);
 
     if (!normalizedProfile) {
-      normalizedProfile = createDefaultProfile(email, uid);
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
-        fetch(`${apiUrl}/api/auth/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, uid, profile: normalizedProfile }),
-        }).catch(err => console.error("Auto-registration on login failed:", err));
-      } catch (err) {
-        console.error("Auto-registration fetch on login failed:", err);
-      }
+      // No profile exists — show onboarding form so user fills in real details
+      setUserProfile(null);
+      setShowOnboarding(true);
+      return;
     }
 
     setUserProfile(normalizedProfile);
@@ -247,21 +243,35 @@ export default function App() {
   };
 
   const handleNewUser = (email: string, uid: string) => {
+    // Set the ref BEFORE Firebase auth triggers onAuthStateChanged
+    isNewSignUpRef.current = true;
+
+    // Clear any old stored data for this user so they start fresh
+    localStorage.removeItem(`userProfile_${uid}`);
+    localStorage.removeItem(`userApplications_${uid}`);
+
     setSessionEmail(email);
     setSessionUid(uid);
     localStorage.setItem("sessionEmail", email);
     localStorage.setItem("sessionUid", uid);
+    setUserProfile(null);
     setShowOnboarding(true);
   };
 
   const handleSignOut = async () => {
+    const uid = sessionUid;
     try {
       await firebaseSignOut(auth);
     } catch (error) {
       console.error("Error signing out of Firebase:", error);
     } finally {
+      // Clear all stored session and profile data
       localStorage.removeItem("sessionEmail");
       localStorage.removeItem("sessionUid");
+      if (uid) {
+        localStorage.removeItem(`userProfile_${uid}`);
+        localStorage.removeItem(`userApplications_${uid}`);
+      }
       setSessionEmail(null);
       setSessionUid(null);
       setUserProfile(null);
@@ -390,7 +400,7 @@ export default function App() {
     <div className="flex h-screen w-full bg-white font-sans text-slate-900 overflow-hidden">
       <Toaster position="top-right" />
       
-      {(!userProfile || showOnboarding) && (
+      {showOnboarding && (
         <div className="fixed inset-0 z-[100] bg-slate-50 flex items-center justify-center p-4 overflow-auto">
           <div className="max-w-4xl w-full py-12">
             <div className="text-center mb-8">

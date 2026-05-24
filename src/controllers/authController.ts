@@ -113,6 +113,27 @@ export const register = async (req: Request, res: Response): Promise<void> => {
          is_widow, is_single_mother, is_other_profession, email, jana_seva_id, is_differently_abled, family_size)
       VALUES 
         ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+      ON CONFLICT (id) DO UPDATE SET
+        full_name = EXCLUDED.full_name,
+        age = EXCLUDED.age,
+        gender = EXCLUDED.gender,
+        occupation = EXCLUDED.occupation,
+        annual_income = EXCLUDED.annual_income,
+        state = EXCLUDED.state,
+        is_farmer = EXCLUDED.is_farmer,
+        is_student = EXCLUDED.is_student,
+        is_senior_citizen = EXCLUDED.is_senior_citizen,
+        is_startup_founder = EXCLUDED.is_startup_founder,
+        is_unemployed = EXCLUDED.is_unemployed,
+        is_female_student = EXCLUDED.is_female_student,
+        is_working_female = EXCLUDED.is_working_female,
+        is_pregnant_woman = EXCLUDED.is_pregnant_woman,
+        is_widow = EXCLUDED.is_widow,
+        is_single_mother = EXCLUDED.is_single_mother,
+        is_other_profession = EXCLUDED.is_other_profession,
+        is_differently_abled = EXCLUDED.is_differently_abled,
+        family_size = EXCLUDED.family_size,
+        updated_at = CURRENT_TIMESTAMP
       RETURNING *;
     `;
 
