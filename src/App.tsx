@@ -176,12 +176,21 @@ export default function App() {
               }
               setShowOnboarding(false);
             } else {
-              // No profile in backend — show onboarding form so user can fill real details
+              // No profile in backend — for existing login, create a default profile
               if (cachedProfileStr) {
                 setShowOnboarding(false);
               } else {
-                setShowOnboarding(true);
-                setUserProfile(null);
+                const defaultProf = createDefaultProfile(user.email, user.uid);
+                setUserProfile(defaultProf);
+                localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(defaultProf));
+                setShowOnboarding(false);
+
+                // Auto-save to database so it exists
+                fetch(`${apiUrl}/api/auth/register`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email: user.email, uid: user.uid, profile: defaultProf }),
+                }).catch(err => console.error("Auto-registration on refresh failed:", err));
               }
             }
           } else {
@@ -189,9 +198,10 @@ export default function App() {
             if (cachedProfileStr) {
               setShowOnboarding(false);
             } else {
-              // Backend unreachable and no cache — show onboarding
-              setShowOnboarding(true);
-              setUserProfile(null);
+              const defaultProf = createDefaultProfile(user.email, user.uid);
+              setUserProfile(defaultProf);
+              localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(defaultProf));
+              setShowOnboarding(false);
             }
           }
         } catch (err) {
@@ -199,9 +209,10 @@ export default function App() {
           if (cachedProfileStr) {
             setShowOnboarding(false);
           } else {
-            // Offline and no cache — show onboarding
-            setShowOnboarding(true);
-            setUserProfile(null);
+            const defaultProf = createDefaultProfile(user.email, user.uid);
+            setUserProfile(defaultProf);
+            localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(defaultProf));
+            setShowOnboarding(false);
           }
         } finally {
           setAuthLoading(false);
@@ -226,9 +237,23 @@ export default function App() {
     localStorage.setItem("sessionUid", uid);
 
     if (!normalizedProfile) {
-      // No profile exists — show onboarding form so user fills in real details
-      setUserProfile(null);
-      setShowOnboarding(true);
+      // No profile from backend — create a default for existing login users
+      const defaultProf = createDefaultProfile(email, uid);
+      setUserProfile(defaultProf);
+      localStorage.setItem(`userProfile_${uid}`, JSON.stringify(defaultProf));
+      setShowOnboarding(false);
+
+      // Auto-save to database
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+        fetch(`${apiUrl}/api/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, uid, profile: defaultProf }),
+        }).catch(err => console.error("Auto-registration on login failed:", err));
+      } catch (err) {
+        console.error("Auto-registration fetch on login failed:", err);
+      }
       return;
     }
 
