@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Search, Filter, ArrowRight, ExternalLink, Info, CheckCircle2, FileText, Clock, AlertCircle } from "lucide-react";
+import { Search, Filter, ArrowRight, ExternalLink, Info, CheckCircle2, FileText, Clock, AlertCircle, Sparkles } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -13,6 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useState, useEffect } from "react";
 import { Scheme, Language, LocalizedScheme, DbScheme } from "../types";
 import { MOCK_SCHEMES } from "../constants";
+import ReactMarkdown from "react-markdown";
 
 interface SchemeLibraryProps {
   onViewDetails: (scheme: Scheme) => void;
@@ -25,6 +26,11 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const [aiAnswer, setAiAnswer] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [searchedTerm, setSearchedTerm] = useState("");
 
   const categories = ["All", "Agriculture", "Education", "Healthcare", "Employment", "Social Welfare"];
 
@@ -84,6 +90,55 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
     return matchesSearch && matchesCategory;
   });
 
+
+  const handleSearchSubmit = async () => {
+    const query = searchTerm.trim();
+    if (!query) return;
+
+    if (filteredSchemes.length > 0) {
+      setAiAnswer(null);
+      return;
+    }
+
+    setSearchedTerm(query);
+    setAiLoading(true);
+    setAiAnswer(null);
+    setAiError(null);
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const res = await fetch(`${apiUrl}/api/gemini/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          history: [],
+          userInput: `Provide a detailed explanation of the government scheme: "${query}". Please structure it with: 1. Eligibility Criteria, 2. Benefits, 3. Eligible Regions, 4. Required Documents, and 5. Application Roadmap.`,
+          language
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.text || "";
+        // Detect error responses that would crash ReactMarkdown
+        if (text.startsWith("Chat error:") || text.startsWith("Error") || text.includes("API key")) {
+          setAiError("AI service is temporarily unavailable. Please try again later.");
+        } else if (text) {
+          setAiAnswer(text);
+        } else {
+          setAiError("No details found for this scheme.");
+        }
+      } else {
+        setAiError("Failed to retrieve scheme details from AI. Please try again later.");
+      }
+    } catch (err) {
+      console.error("AI Scheme Library Search Error:", err);
+      setAiError("Error connecting to the AI service. Please check your connection.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -116,10 +171,88 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
               placeholder="Search by name, keyword, or benefit..." 
               className="pl-12 h-14 rounded-2xl border-slate-200 bg-white shadow-sm focus-visible:ring-indigo-600"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                if (aiAnswer || aiError) {
+                  setAiAnswer(null);
+                  setAiError(null);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearchSubmit();
+                }
+              }}
             />
           </div>
         </div>
+
+        {aiLoading && (
+          <Card className="border-indigo-100 shadow-md bg-white rounded-3xl overflow-hidden animate-pulse">
+            <CardContent className="p-8 space-y-4">
+              <div className="flex items-center gap-3">
+                <Sparkles className="size-5 text-indigo-500 animate-spin" />
+                <span className="font-bold text-slate-700">JanaSeva AI is searching details for "{searchedTerm}"...</span>
+              </div>
+              <div className="space-y-2">
+                <div className="h-4 bg-slate-100 rounded-full w-3/4"></div>
+                <div className="h-4 bg-slate-100 rounded-full w-5/6"></div>
+                <div className="h-4 bg-slate-100 rounded-full w-2/3"></div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {aiError && filteredSchemes.length === 0 && (
+          <Card className="border-amber-200/50 shadow-lg bg-gradient-to-br from-amber-50/40 via-white to-white rounded-3xl overflow-hidden transition-all duration-300">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="size-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
+                <AlertCircle className="size-5" />
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-slate-900 text-sm">Could not fetch AI details</p>
+                <p className="text-slate-500 text-xs mt-1">{aiError}</p>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setAiError(null)} 
+                className="text-slate-400 hover:text-amber-600 rounded-xl px-3 py-1 font-bold text-xs shrink-0"
+              >
+                Dismiss
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {aiAnswer && filteredSchemes.length === 0 && (
+          <Card className="border-indigo-200/50 shadow-xl bg-gradient-to-br from-indigo-50/40 via-white to-white rounded-3xl overflow-hidden transition-all duration-300">
+            <CardHeader className="bg-gradient-to-r from-indigo-50/80 to-indigo-100/30 p-6 border-b border-indigo-100/60 flex flex-row items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="size-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-100">
+                  <Sparkles className="size-5" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-bold text-indigo-950">JanaSeva AI Insights</CardTitle>
+                  <CardDescription className="text-xs font-semibold text-indigo-600/80 uppercase tracking-widest">Detailed AI Breakdown for "{searchedTerm}"</CardDescription>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setAiAnswer(null)} 
+                className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50/50 rounded-xl px-4 py-2 font-bold text-xs"
+              >
+                Dismiss
+              </Button>
+            </CardHeader>
+            <CardContent className="p-8 prose prose-slate max-w-none prose-sm prose-headings:text-indigo-950 prose-a:text-indigo-600">
+              <div className="space-y-4 text-slate-700 leading-relaxed font-normal">
+                <ReactMarkdown>{aiAnswer}</ReactMarkdown>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="flex flex-wrap gap-2 pt-2">
           {categories.map(cat => (
