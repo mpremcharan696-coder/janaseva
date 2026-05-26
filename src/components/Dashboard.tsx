@@ -40,7 +40,7 @@ export default function Dashboard({ userProfile, applications, onCheckEligibilit
           console.log("Fetched DB schemes:", data);
           
           dbSchemes = data.map(db => ({
-            id: db.id,
+            id: String(db.id),
             name: db.title,
             category: db.category as Scheme['category'],
             description: db.benefits || "No detailed description available.",
@@ -138,7 +138,8 @@ export default function Dashboard({ userProfile, applications, onCheckEligibilit
       if (isFemale && scheme.category === "Social Welfare") score += 10;
       if (isStartupFounder && scheme.category === "Employment") score += 15;
 
-      const matchPercentage = Math.min(99, score + (scheme.id.charCodeAt(scheme.id.length - 1) % 10));
+      const idStr = String(scheme.id);
+      const matchPercentage = Math.min(99, score + (idStr.charCodeAt(idStr.length - 1) % 10));
 
       return { scheme, score, matchPercentage };
     });

@@ -48,7 +48,7 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
           console.log("Fetched DB Schemes:", data);
           
           dbSchemes = data.map(db => ({
-            id: db.id,
+            id: String(db.id),
             name: db.title,
             category: db.category as Scheme['category'],
             description: db.benefits || "No detailed description available.",
