@@ -20,7 +20,7 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
 
   const t = {
     en: {
-      title: "Welcome to JanaSeva",
+      title: "Welcome to SchemeSetu",
       subtitle: "Your secure gateway to unified government schemes and AI matching.",
       emailLabel: "Enter your Email Address",
       passwordLabel: "Enter your Password",
@@ -29,11 +29,11 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
       emailBtnSignUp: "Create Account",
       googleBtn: "Sign in with Google",
       or: "or use your credentials",
-      loading: "Connecting to JanaSeva Core...",
-      mockGoogleSubtitle: "Choose an account to continue to JanaSeva",
+      loading: "Connecting to SchemeSetu Core...",
+      mockGoogleSubtitle: "Choose an account to continue to SchemeSetu",
     },
     hi: {
-      title: "जनसेवा में आपका स्वागत है",
+      title: "SchemeSetu में आपका स्वागत है",
       subtitle: "एकीकृत सरकारी योजनाओं और एआई मिलान के लिए आपका सुरक्षित पोर्टल।",
       emailLabel: "अपना ईमेल पता दर्ज करें",
       passwordLabel: "अपना पासवर्ड दर्ज करें",
@@ -42,11 +42,11 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
       emailBtnSignUp: "खाता बनाएं",
       googleBtn: "गूगल के साथ साइन इन करें",
       or: "या अपने क्रेडेंशियल्स का उपयोग करें",
-      loading: "जनसेवा कोर से जुड़ रहा है...",
-      mockGoogleSubtitle: "जनसेवा में जारी रखने के लिए एक खाता चुनें",
+      loading: "SchemeSetu कोर से जुड़ रहा है...",
+      mockGoogleSubtitle: "SchemeSetu में जारी रखने के लिए एक खाता चुनें",
     }
   }[language as "en" | "hi"] || {
-    title: "Welcome to JanaSeva",
+    title: "Welcome to SchemeSetu",
     subtitle: "Your secure gateway to unified government schemes and AI matching.",
     emailLabel: "Enter your Email Address",
     passwordLabel: "Enter your Password",
@@ -55,8 +55,8 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
     emailBtnSignUp: "Create Account",
     googleBtn: "Sign in with Google",
     or: "or use your credentials",
-    loading: "Connecting to JanaSeva Core...",
-    mockGoogleSubtitle: "Choose an account to continue to JanaSeva",
+    loading: "Connecting to SchemeSetu Core...",
+    mockGoogleSubtitle: "Choose an account to continue to SchemeSetu",
   };
 
   const handleBackendAuth = async (userEmail: string, uid: string, isSignUpRequest: boolean) => {
@@ -68,7 +68,7 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
 
     // For login, try to fetch existing profile from backend
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -158,7 +158,7 @@ export default function LoginPortal({ onLoginSuccess, onNewUser, language }: Log
           <div className="size-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]">
             <Sparkles className="size-6" />
           </div>
-          <span className="text-2xl font-black text-white tracking-tight">JanaSeva</span>
+          <span className="text-2xl font-black text-white tracking-tight">SchemeSetu</span>
         </div>
 
         <Card className="border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative">

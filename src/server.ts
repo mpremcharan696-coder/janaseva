@@ -37,14 +37,14 @@ app.get('/health', async (req, res) => {
     const dbTest = await query('SELECT NOW()');
     res.status(200).json({ 
       status: 'ok', 
-      message: 'JanaSeva API is running', 
+      message: 'SchemeSetu API is running', 
       database: 'connected',
       dbTime: dbTest.rows[0].now
     });
   } catch (err: any) {
     res.status(500).json({ 
       status: 'error', 
-      message: 'JanaSeva API is running, but database connection failed', 
+      message: 'SchemeSetu API is running, but database connection failed', 
       error: err.message,
       stack: err.stack,
       dbUrlExists: !!process.env.DATABASE_URL

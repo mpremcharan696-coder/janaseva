@@ -64,7 +64,7 @@ export async function chatWithAssistant(history: Message[], userInput: string, l
   };
 
   const systemInstruction = `
-    You are JanaSeva, a helpful multilingual assistant for government schemes.
+    You are SchemeSetu, a helpful multilingual assistant for government schemes.
     Current interaction language: ${langNames[language]}. 
     IMPORTANT: You MUST respond primarily in ${langNames[language]} unless the user specifically asks to switch.
     Your goal is to help users understand schemes, eligibility, and application procedures.

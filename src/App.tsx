@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { LayoutDashboard, Bot, Info, AlertCircle, Loader2, Sparkles, UserCircle } from "lucide-react";
+import { LayoutDashboard, Bot, Info, AlertCircle, Loader2, Sparkles, UserCircle, LogOut } from "lucide-react";
 import { Toaster } from "@/src/components/ui/sonner";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -88,6 +88,18 @@ export default function App() {
   const t = translations[language];
 
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowUserDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const [isSchemeDialogOpen, setIsSchemeDialogOpen] = useState(false);
 
   const handleOpenSchemeDetails = (scheme: Scheme) => {
@@ -158,7 +170,7 @@ export default function App() {
         }
 
         try {
-          const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+          const apiUrl = import.meta.env.VITE_API_URL;
           const res = await fetch(`${apiUrl}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -245,7 +257,7 @@ export default function App() {
 
       // Auto-save to database
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+        const apiUrl = import.meta.env.VITE_API_URL;
         fetch(`${apiUrl}/api/auth/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -284,19 +296,14 @@ export default function App() {
   };
 
   const handleSignOut = async () => {
-    const uid = sessionUid;
     try {
       await firebaseSignOut(auth);
     } catch (error) {
       console.error("Error signing out of Firebase:", error);
     } finally {
-      // Clear all stored session and profile data
+      // Clear session identifiers, but retain cached profile data for future logins
       localStorage.removeItem("sessionEmail");
       localStorage.removeItem("sessionUid");
-      if (uid) {
-        localStorage.removeItem(`userProfile_${uid}`);
-        localStorage.removeItem(`userApplications_${uid}`);
-      }
       setSessionEmail(null);
       setSessionUid(null);
       setUserProfile(null);
@@ -361,7 +368,7 @@ export default function App() {
     setActiveTab("dashboard");
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const apiUrl = import.meta.env.VITE_API_URL;
       if (sessionEmail && sessionUid) {
         const res = await fetch(`${apiUrl}/api/auth/register`, {
           method: "POST",
@@ -386,7 +393,7 @@ export default function App() {
 
   const navItems = [
     { id: "dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
-    { id: "chat", label: t.nav.janaseva_ai, icon: Bot },
+    { id: "chat", label: t.nav.schemesetu_ai, icon: Bot },
     { id: "library", label: t.nav.library, icon: Info },
     { id: "settings", label: t.nav.settings, icon: UserCircle },
   ];
@@ -406,7 +413,7 @@ export default function App() {
         <div className="size-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-2xl animate-pulse">
           <Sparkles className="size-8" />
         </div>
-        <p className="text-slate-400 text-sm font-medium animate-pulse">Loading JanaSeva...</p>
+        <p className="text-slate-400 text-sm font-medium animate-pulse">Loading SchemeSetu...</p>
       </div>
     );
   }
@@ -437,7 +444,7 @@ export default function App() {
                 <div className="size-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-2xl">
                   <Sparkles className="size-8" />
                 </div>
-                <h1 className="text-4xl font-black text-indigo-950 tracking-tighter">JanaSeva</h1>
+                <h1 className="text-4xl font-black text-indigo-950 tracking-tighter">SchemeSetu</h1>
               </motion.div>
               <h2 className="text-3xl font-black text-slate-900 mb-2">{t.profile.onboarding_title}</h2>
               <p className="text-slate-500 font-medium">{t.profile.onboarding_subtitle}</p>
@@ -472,7 +479,7 @@ export default function App() {
             <div className="size-6 bg-indigo-500 rounded-md flex items-center justify-center">
               <Sparkles className="size-4 text-white" />
             </div>
-            <h1 className="text-white font-bold text-xl tracking-tight">JanaSeva</h1>
+            <h1 className="text-white font-bold text-xl tracking-tight">SchemeSetu</h1>
           </div>
           <p className="text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-60">{t.subtitle}</p>
         </div>
@@ -533,10 +540,10 @@ export default function App() {
                 ID: {userProfile.jana_seva_id}
               </span>
             )}
-            <span className="text-slate-300">|</span>
-            <span>Income: ₹{userProfile?.income?.toLocaleString() || "4,50,000"}</span>
-            <span className="text-slate-300">|</span>
-            <span>Location: {userProfile?.location || "Haryana"}</span>
+            <span className="text-slate-300 hidden md:inline">|</span>
+            <span className="hidden md:inline">Income: ₹{userProfile?.income?.toLocaleString() || "4,50,000"}</span>
+            <span className="text-slate-300 hidden lg:inline">|</span>
+            <span className="hidden lg:inline">Location: {userProfile?.location || "Haryana"}</span>
           </div>
 
           <div className="flex items-center gap-6">
@@ -555,14 +562,63 @@ export default function App() {
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-3 border-l border-slate-100 pl-6">
-              <div className="text-right hidden md:block">
-                <p className="text-xs font-bold text-slate-900 leading-none">Citizen Profile</p>
-                <p className="text-[10px] text-slate-500 font-medium">Verified Account</p>
-              </div>
-              <div className="size-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-600 shadow-sm overflow-hidden">
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile?.name || 'Ramesh'}`} alt="Avatar" />
-              </div>
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="flex items-center gap-3 border-l border-slate-100 pl-6 cursor-pointer text-left hover:opacity-85 select-none focus:outline-none"
+              >
+                <div className="text-right hidden md:block">
+                  <p className="text-xs font-bold text-slate-900 leading-none">Citizen Profile</p>
+                  <p className="text-[10px] text-slate-500 font-medium mt-1">Verified Account</p>
+                </div>
+                <div className="size-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-600 shadow-sm overflow-hidden">
+                  <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile?.name || 'Ramesh'}`} alt="Avatar" />
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {showUserDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-12 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl py-2 z-50 overflow-hidden"
+                  >
+                    <div className="px-4 py-2 border-b border-slate-100">
+                      <p className="text-xs font-bold text-slate-900 truncate">{userProfile?.name}</p>
+                      <p className="text-[10px] text-slate-500 truncate mt-0.5">{sessionEmail}</p>
+                      {userProfile?.jana_seva_id && (
+                        <p className="text-[9px] text-indigo-600 font-mono mt-1 bg-indigo-50 px-1.5 py-0.5 rounded inline-block">
+                          ID: {userProfile.jana_seva_id}
+                        </p>
+                      )}
+                    </div>
+                    <div className="p-1">
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          setActiveTab("settings");
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors focus:outline-none cursor-pointer"
+                      >
+                        <UserCircle className="size-4 text-slate-500" />
+                        My Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          handleSignOut();
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors focus:outline-none cursor-pointer"
+                      >
+                        <LogOut className="size-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>

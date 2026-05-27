@@ -29,12 +29,12 @@ export default function ChatAssistant({ language, userId, userName = "Citizen" }
   // Update greeting when language changes or load history
   useEffect(() => {
     const greetings: Record<Language, string> = {
-      en: `Hello ${userName}! I am JanaSeva, your government scheme assistant. I can help you find schemes, check eligibility, and guide you through applications.`,
-      hi: `नमस्ते ${userName}! मैं जनसेवा हूँ, आपकी सरकारी योजना सहायक। मैं योजनाओं को खोजने, पात्रता की जांच करने और आवेदन में आपकी मदद कर सकता हूँ।`,
-      te: `నమస్కారం ${userName}! నేను జనసేవ, మీ ప్రభుత్వ పథకాల సహాయకుడిని. పథకాలను కనుగొనడంలో, అర్హతను తనిఖీ చేయడంలో మరియు దరఖాస్తు చేయడంలో నేను మీకు సహాయం చేస్తాను.`,
-      ta: `வணக்கம் ${userName}! நான் JanaSeva, உங்கள் அரசு திட்ட உதவியாளர். திட்டங்களைக் கண்டறியவும், தகுதியைச் சரிபார்க்கவும், விண்ணப்பிக்கவும் நான் உங்களுக்கு உதவுவேன்.`,
-      bn: `নমস্কার ${userName}! আমি জনসেবা, আপনার সরকারি স্কিম সহকারী। আমি আপনাকে স্কিম খুঁজে পেতে, যোগ্যতা যাচাই করতে এবং আবেদনের নির্দেশিকা দিতে সাহায্য করতে পারি।`,
-      kn: `ನಮಸ್ಕಾರ ${userName}! ನಾನು ಜನಸೇವೆ, ನಿಮ್ಮ ಸರ್ಕಾರಿ ಯೋಜನಾ ಸಹಾಯಕ. ಯೋಜನೆಗಳನ್ನು ಹುಡುಕಲು, ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಲು ಮತ್ತು ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.`
+      en: `Hello ${userName}! I am SchemeSetu, your government scheme assistant. I can help you find schemes, check eligibility, and guide you through applications.`,
+      hi: `नमस्ते ${userName}! मैं SchemeSetu हूँ, आपकी सरकारी योजना सहायक। मैं योजनाओं को खोजने, पात्रता की जांच करने और आवेदन में आपकी मदद कर सकता हूँ।`,
+      te: `నమస్కారం ${userName}! నేను SchemeSetu, మీ ప్రభుత్వ పథకాల సహాయకుడిని. పథకాలను కనుగొనడంలో, అర్హతను తనిఖీ చేయడంలో మరియు దరఖాస్తు చేయడంలో నేను మీకు సహాయం చేస్తాను.`,
+      ta: `வணக்கம் ${userName}! நான் SchemeSetu, உங்கள் அரசு திட்ட உதவியாளர். திட்டங்களைக் கண்டறியவும், தகுதியைச் சரிபார்க்கவும், விண்ணப்பிக்கவும் நான் உங்களுக்கு உதவுவேன்.`,
+      bn: `নমস্কার ${userName}! আমি SchemeSetu, আপনার সরকারি স্কিম সহকারী। আমি আপনাকে স্কিম খুঁজে পেতে, যোগ্যতা যাচাই করতে এবং আবেদনের নির্দেশিকা দিতে সাহায্য করতে পারি।`,
+      kn: `ನಮಸ್ಕಾರ ${userName}! ನಾನು SchemeSetu, ನಿಮ್ಮ ಸರ್ಕಾರಿ ಯೋಜನಾ ಸಹಾಯಕ. ಯೋಜನೆಗಳನ್ನು ಹುಡುಕಲು, ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಲು ಮತ್ತು ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತೇನೆ.`
     };
 
     const loadHistory = async () => {
@@ -43,7 +43,7 @@ export default function ChatAssistant({ language, userId, userName = "Citizen" }
         return;
       }
       try {
-        const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
+        const apiUrl = import.meta.env.VITE_API_URL;
         const res = await fetch(`${apiUrl}/api/chat/${userId}/history`);
         if (res.ok) {
           const data = await res.json();
@@ -81,7 +81,7 @@ export default function ChatAssistant({ language, userId, userName = "Citizen" }
     setInput("");
     setIsLoading(true);
 
-    const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     // Save user message to DB asynchronously
     if (userId) {
@@ -148,7 +148,7 @@ export default function ChatAssistant({ language, userId, userName = "Citizen" }
             <Bot className="size-7" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">JanaSeva AI</h2>
+            <h2 className="text-2xl font-bold text-slate-800">SchemeSetu AI</h2>
             <div className="flex items-center gap-2">
               <span className="size-2 bg-emerald-500 rounded-full animate-pulse" />
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest leading-none">Online & Multilingual</p>

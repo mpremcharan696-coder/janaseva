@@ -29,7 +29,7 @@ export const MOCK_SCHEMES: Scheme[] = [
       "Bank Account Details"
     ],
     procedures: [
-      "Verify eligibility via JanaSeva engine",
+      "Verify eligibility via SchemeSetu engine",
       "Upload required land and identity documents",
       "Submit application to local agriculture office",
       "Site verification by designated official",
@@ -43,7 +43,7 @@ export const MOCK_SCHEMES: Scheme[] = [
         shortDescription: "प्रत्यक्ष आय सहायता और उपकरणों के लिए सब्सिडी।",
         description: "किसान सहायता पहल छोटे पैमाने के किसानों को सालाना ₹50,000 तक की वित्तीय सहायता प्रदान करती है, साथ ही सिंचाई उपकरणों पर 65% सब्सिडी भी देती है।",
         procedures: [
-          "JanaSeva इंजन के माध्यम से पात्रता सत्यापित करें",
+          "SchemeSetu इंजन के माध्यम से पात्रता सत्यापित करें",
           "आवश्यक भूमि और पहचान दस्तावेज अपलोड करें",
           "स्थानीय कृषि कार्यालय में आवेदन जमा करें",
           "नामित अधिकारी द्वारा साइट सत्यापन",
@@ -55,7 +55,7 @@ export const MOCK_SCHEMES: Scheme[] = [
         shortDescription: "నేరుగా ఆదాయ సహాయం మరియు పరికరాల కోసం సబ్సిడీ.",
         description: "రైతు మద్దతు చొరవ చిన్న తరహా రైతులకు ఏటా ₹50,000 వరకు ఆర్థిక సహాయాన్ని అందిస్తుంది, అలాగే నీటి పారుదల పరికరాలపై 65% సబ్సిడీని అందిస్తుంది.",
         procedures: [
-          "JanaSeva ఇంజిన్ ద్వారా అర్హతను ధృవీకరించండి",
+          "SchemeSetu ఇంజిన్ ద్వారా అర్హతను ధృవీకరించండి",
           "అవసరమైన భూమి మరియు గుర్తింపు పత్రాలను అప్‌లోడ్ చేయండి",
           "స్థానిక వ్యవసాయ కార్యాలయంలో దరఖాస్తును సమర్పించండి",
           "నియమించబడిన అధికారి ద్వారా సైట్ ధృవీకరణ",
@@ -172,7 +172,7 @@ export const MOCK_SCHEMES: Scheme[] = [
       "Aadhaar Card"
     ],
     procedures: [
-      "Register on the SkillUp portal via JanaSeva link",
+      "Register on the SkillUp portal via SchemeSetu link",
       "Select an accredited course from the list",
       "Verify education documents with AI scanner",
       "Receive voucher for course and hardware"

@@ -53,7 +53,7 @@ export default function EligibilityForm({ onComplete }: EligibilityFormProps) {
   const handleAnalyze = async () => {
     setLoading(true);
     try {
-      const apiUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_URL || "http://localhost:5000") : "";
+      const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/gemini/eligibility`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -91,7 +91,7 @@ export default function EligibilityForm({ onComplete }: EligibilityFormProps) {
               <Sparkles className="size-10 text-indigo-300" />
             </div>
             <h2 className="text-3xl font-bold tracking-tight">Your Eligibility Report</h2>
-            <p className="text-indigo-200 mt-2 font-medium opacity-80 italic">Curated by JanaSeva Engine for {profile.name}</p>
+            <p className="text-indigo-200 mt-2 font-medium opacity-80 italic">Curated by SchemeSetu Engine for {profile.name}</p>
             
             {/* Background blur blobs */}
             <div className="absolute top-0 right-0 size-32 bg-indigo-500/20 blur-3xl rounded-full" />

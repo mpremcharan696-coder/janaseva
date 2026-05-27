@@ -92,7 +92,7 @@ export default function Dashboard({ userProfile, applications, onCheckEligibilit
     const fetchSchemes = async () => {
       try {
         setIsLoading(true);
-        const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+        const apiUrl = import.meta.env.VITE_API_URL;
         const res = await fetch(`${apiUrl}/api/schemes`);
         
         let dbSchemes: Scheme[] = [];

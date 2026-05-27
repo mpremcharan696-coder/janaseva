@@ -38,7 +38,7 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
     const fetchSchemes = async () => {
       try {
         setIsLoading(true);
-        const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+        const apiUrl = import.meta.env.VITE_API_URL;
         const res = await fetch(`${apiUrl}/api/schemes`);
         
         let dbSchemes: Scheme[] = [];
@@ -106,7 +106,7 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
     setAiError(null);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000" : "");
+      const apiUrl = import.meta.env.VITE_API_URL;
       const res = await fetch(`${apiUrl}/api/gemini/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -192,7 +192,7 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
             <CardContent className="p-8 space-y-4">
               <div className="flex items-center gap-3">
                 <Sparkles className="size-5 text-indigo-500 animate-spin" />
-                <span className="font-bold text-slate-700">JanaSeva AI is searching details for "{searchedTerm}"...</span>
+                <span className="font-bold text-slate-700">SchemeSetu AI is searching details for "{searchedTerm}"...</span>
               </div>
               <div className="space-y-2">
                 <div className="h-4 bg-slate-100 rounded-full w-3/4"></div>
@@ -233,7 +233,7 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
                   <Sparkles className="size-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl font-bold text-indigo-950">JanaSeva AI Insights</CardTitle>
+                  <CardTitle className="text-xl font-bold text-indigo-950">SchemeSetu AI Insights</CardTitle>
                   <CardDescription className="text-xs font-semibold text-indigo-600/80 uppercase tracking-widest">Detailed AI Breakdown for "{searchedTerm}"</CardDescription>
                 </div>
               </div>

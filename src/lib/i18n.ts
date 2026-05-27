@@ -3,12 +3,12 @@ import { Language } from "../types";
 export const translations: Record<Language, any> = {
   en: {
     welcome: "Namaste",
-    engine_name: "JanaSeva",
+    engine_name: "SchemeSetu",
     subtitle: "Scheme Engine",
     nav: {
       dashboard: "Dashboard",
       eligibility: "Eligibility",
-      janaseva_ai: "JanaSeva AI",
+      schemesetu_ai: "SchemeSetu AI",
       vault: "Vault",
       tracking: "Tracking",
       library: "Library",
@@ -37,7 +37,7 @@ export const translations: Record<Language, any> = {
     },
     profile: {
       title: "Profile Settings",
-      onboarding_title: "Welcome to JanaSeva",
+      onboarding_title: "Welcome to SchemeSetu",
       onboarding_subtitle: "Tell us a bit about yourself so we can find the best schemes for you.",
       name: "Full Name",
       age: "Age",
@@ -60,12 +60,12 @@ export const translations: Record<Language, any> = {
   },
   hi: {
     welcome: "नमस्ते",
-    engine_name: "ಜನಸೇವೆ (JanaSeva)",
+    engine_name: "ಜನಸೇವೆ (SchemeSetu)",
     subtitle: "योजना इंजन",
     nav: {
       dashboard: "डैशबोर्ड",
       eligibility: "पात्रता",
-      janaseva_ai: "जनसेवा AI",
+      schemesetu_ai: "SchemeSetu AI",
       vault: "दस्तावेज़",
       tracking: "ट्रैकिंग",
       library: "योजना पुस्तकालय",
@@ -94,7 +94,7 @@ export const translations: Record<Language, any> = {
     },
     profile: {
       title: "प्रोफ़ाइल सेटिंग",
-      onboarding_title: "JanaSeva में आपका स्वागत है",
+      onboarding_title: "SchemeSetu में आपका स्वागत है",
       onboarding_subtitle: "हमें अपने बारे में थोड़ा बताएं ताकि हम आपके लिए सबसे अच्छी योजनाएं खोज सकें।",
       name: "पूरा नाम",
       age: "आयु",
@@ -117,12 +117,12 @@ export const translations: Record<Language, any> = {
   },
   te: {
     welcome: "నమస్కారం",
-    engine_name: "జనసేవ (JanaSeva)",
+    engine_name: "జనసేవ (SchemeSetu)",
     subtitle: "పథకాల ఇంజిన్",
     nav: {
       dashboard: "డాష్‌బోర్డ్",
       eligibility: "అర్హత",
-      janaseva_ai: "జనసేవ AI",
+      schemesetu_ai: "SchemeSetu AI",
       vault: "పత్రాలు",
       tracking: "ట్రాకింగ్",
       library: "పథకాల లైబ్రరీ",
@@ -174,12 +174,12 @@ export const translations: Record<Language, any> = {
   },
   ta: {
     welcome: "வணக்கம்",
-    engine_name: "ஜனசேவா (JanaSeva)",
+    engine_name: "ஜனசேவா (SchemeSetu)",
     subtitle: "திட்ட இயந்திரம்",
     nav: {
       dashboard: "டாஷ்போர்டு",
       eligibility: "தகுதியறிதல்",
-      janaseva_ai: "ஜனசேவா AI",
+      schemesetu_ai: "SchemeSetu AI",
       vault: "ஆவணங்கள்",
       tracking: "கண்காணிப்பு",
       library: "திட்ட நூலகம்",
@@ -208,7 +208,7 @@ export const translations: Record<Language, any> = {
     },
     profile: {
       title: "சுயவிவர அமைப்புகள்",
-      onboarding_title: "JanaSeva-க்கு உங்களை வரவேற்கிறோம்",
+      onboarding_title: "SchemeSetu-க்கு உங்களை வரவேற்கிறோம்",
       onboarding_subtitle: "உங்களுக்கான சிறந்த திட்டங்களைக் கண்டறிய உங்களைப் பற்றி சிறிது கூறுங்கள்.",
       name: "முழு பெயர்",
       age: "வயது",
@@ -231,12 +231,12 @@ export const translations: Record<Language, any> = {
   },
   bn: {
     welcome: "নমস্কার",
-    engine_name: "জনসেবা (JanaSeva)",
+    engine_name: "জনসেবা (SchemeSetu)",
     subtitle: "স্কিম ইঞ্জিন",
     nav: {
       dashboard: "ড্যাশবোর্ড",
       eligibility: "যোগ্যতা",
-      janaseva_ai: "জনসেবা AI",
+      schemesetu_ai: "SchemeSetu AI",
       vault: "ভল্ট",
       tracking: "ট্র্যাকিং",
       library: "স্কিম লাইব্রেরি",
@@ -265,7 +265,7 @@ export const translations: Record<Language, any> = {
     },
     profile: {
       title: "প্রোফাইল সেটিংস",
-      onboarding_title: "JanaSeva-তে স্বাগতম",
+      onboarding_title: "SchemeSetu-তে স্বাগতম",
       onboarding_subtitle: "আপনার জন্য সেরা স্কিমগুলো খুঁজে পেতে আমাদের আপনার সম্পর্কে কিছু বলুন।",
       name: "পুরো নাম",
       age: "বয়স",
@@ -288,12 +288,12 @@ export const translations: Record<Language, any> = {
   },
   kn: {
     welcome: "ನಮಸ್ಕಾರ",
-    engine_name: "ಜನಸೇವೆ (JanaSeva)",
+    engine_name: "ಜನಸೇವೆ (SchemeSetu)",
     subtitle: "ಯೋಜನಾ ಇಂಜಿನ್",
     nav: {
       dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
       eligibility: "ಅರ್ಹತೆ",
-      janaseva_ai: "ಜನಸೇವೆ AI",
+      schemesetu_ai: "SchemeSetu AI",
       vault: "ದಾಖಲೆಗಳು",
       tracking: "ಟ್ರ್ಯಾಕಿಂಗ್",
       library: "ಯೋಜನಾ ಗ್ರಂಥಾಲಯ",

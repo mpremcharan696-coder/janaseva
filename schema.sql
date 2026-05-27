@@ -1,4 +1,4 @@
--- JanaSeva AI - PostgreSQL Schema Definition
+-- SchemeSetu AI - PostgreSQL Schema Definition
 -- Optimized for Neon.tech
 
 -- Enable the pgcrypto extension for UUID generation (if not natively supported, though gen_random_uuid() is built-in in PG 13+)
