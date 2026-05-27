@@ -53,7 +53,8 @@ app.use('/api', (req, res) => {
 
 // Serve frontend static files in production (Render)
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.resolve(__dirname, '../../dist');
+  // process.cwd() = project root on Render (where npm start is run from)
+  const distPath = path.resolve(process.cwd(), 'dist');
   app.use(express.static(distPath));
   // All non-API routes → serve React app
   app.get('*', (req, res) => {
