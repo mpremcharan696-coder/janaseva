@@ -15,10 +15,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Middleware — CORS must allow the Vercel frontend + credentials for auth
 app.use(cors({
-  origin: '*', // For production, you may want to restrict this to your Vercel URL
+  origin: [
+    'https://schemesetu-nu.vercel.app',
+    'https://schemesetu-u1vu.onrender.com',
+    'http://localhost:3000',
+    'http://localhost:5000',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
 }));
 app.use(express.json());
 
