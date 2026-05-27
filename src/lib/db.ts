@@ -28,9 +28,9 @@ const pool = connectionString ? new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
-  max: 20, // Max number of clients in the pool
+  max: 5, // Neon free tier: keep pool small
   idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+  connectionTimeoutMillis: 10000, // 10 seconds — allows for Neon cold start wake-up
 }) : null;
 
 // Run database schema upgrades on startup to support persistent authentication if database is connected
@@ -128,7 +128,9 @@ if (pool) {
       `);
       console.log('✅ Database auto-migrations for authentication completed successfully!');
     } catch (err) {
-      console.error('❌ Database migration failed:', err);
+      // Migration failure is non-fatal — app continues running
+      // This can happen on first deploy due to Neon cold start; subsequent requests will work
+      console.error('⚠️ Database migration failed (non-fatal, server will continue):', (err as Error).message);
     }
   })();
 }
