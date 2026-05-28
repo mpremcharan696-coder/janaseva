@@ -38,7 +38,9 @@ export interface Scheme {
   documentation: string[];
   procedures: string[];
   deadline?: string;
-  estimatedProcessingTime: string;
+  min_income?: number;
+  max_income?: number;
+  raw_criteria?: any;
   translations?: Partial<Record<Language, LocalizedScheme>>;
 }
 

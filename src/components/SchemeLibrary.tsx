@@ -11,16 +11,17 @@ import { Badge } from "@/src/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/src/components/ui/accordion";
 import { useState, useEffect } from "react";
-import { Scheme, Language, LocalizedScheme, DbScheme } from "../types";
+import { Scheme, Language, LocalizedScheme, DbScheme, UserProfile } from "../types";
 import { MOCK_SCHEMES } from "../constants";
 import ReactMarkdown from "react-markdown";
 
 interface SchemeLibraryProps {
   onViewDetails: (scheme: Scheme) => void;
   language: Language;
+  userProfile?: UserProfile | null;
 }
 
-export default function SchemeLibrary({ onViewDetails, language }: SchemeLibraryProps) {
+export default function SchemeLibrary({ onViewDetails, language, userProfile }: SchemeLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [schemes, setSchemes] = useState<Scheme[]>([]);
@@ -58,6 +59,9 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
             documentation: db.documents_required || [],
             procedures: db.application_process ? [db.application_process] : [],
             estimatedProcessingTime: "15 Days",
+            min_income: db.eligibility_criteria?.min_income,
+            max_income: db.eligibility_criteria?.max_income,
+            raw_criteria: db.eligibility_criteria,
             translations: {}
           }));
         } else {
@@ -87,7 +91,24 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
     const matchesSearch = localized.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          localized.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "All" || scheme.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    if (!matchesSearch || !matchesCategory) return false;
+
+    if (userProfile && scheme.raw_criteria) {
+      const c = scheme.raw_criteria;
+      
+      if (c.gender && Array.isArray(c.gender) && c.gender.length > 0) {
+        if (!c.gender.includes(userProfile.gender)) return false;
+      }
+      
+      if (c.occupation && Array.isArray(c.occupation) && c.occupation.length > 0) {
+        const userOcc = userProfile.occupation.toLowerCase();
+        const hasMatch = c.occupation.some((occ: string) => userOcc.includes(occ.toLowerCase()));
+        if (!hasMatch) return false;
+      }
+    }
+
+    return true;
   });
 
 
@@ -293,6 +314,12 @@ export default function SchemeLibrary({ onViewDetails, language }: SchemeLibrary
                 </div>
                 <CardTitle className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{localized.name}</CardTitle>
                 <CardDescription className="text-sm font-medium text-slate-500 line-clamp-2 mt-2 leading-relaxed">{localized.shortDescription}</CardDescription>
+                {(scheme.min_income !== undefined || scheme.max_income !== undefined) && (
+                  <div className="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100">
+                    <CheckCircle2 className="size-3.5" />
+                    Income req: ₹{scheme.min_income?.toLocaleString() || "0"} - {scheme.max_income ? `₹${scheme.max_income.toLocaleString()}` : 'No limit'}
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="p-8 pt-0 flex-1">
                 <Accordion className="w-full">

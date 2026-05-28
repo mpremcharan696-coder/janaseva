@@ -657,7 +657,7 @@ export default function App() {
                   </TabsContent>
 
                   <TabsContent value="library" className="mt-0">
-                    <SchemeLibrary onViewDetails={handleOpenSchemeDetails} language={language} />
+                    <SchemeLibrary onViewDetails={handleOpenSchemeDetails} language={language} userProfile={userProfile} />
                   </TabsContent>
 
                   <TabsContent value="settings" className="mt-0">
